@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EduCoin — Educação Financeira</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=DM+Mono&display=swap" rel="stylesheet">
+
+<style>
+/* ── RESET ── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+/* ── TOKENS ── */
+:root {
+  --gold:   #38ffcf;
+  --gold2:  #7dffe0;
+  --bg:     #0A0906;
+  --bg2:    #110F0A;
+  --bg3:    #1A1710;
+
+  --line:   rgba(56,255,207,.18);
+  --line2:  rgba(56,255,207,.45);
+
+  --text:   #EDE8DF;
+  --muted:  #7A7060;
+
+  --green:  #52D68A;
+  --red:    #E05C6A;
+
+  --serif:  'DM Serif Display', Georgia, serif;
+  --sans:   'DM Sans', sans-serif;
+  --mono:   'DM Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); overflow-x: hidden; }
+
+/* ── UTILITIES ── */
+.gold  { color: var(--gold); }
+.gold2 { color: var(--gold2); }
+.green { color: var(--green); }
+.red   { color: var(--red); }
+.mono  { font-family: var(--mono); }
+.serif { font-family: var(--serif); }
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px; height: 60px;
+  background: rgba(10,9,6,.88);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--line);
+}
+.nav-logo { font-family: var(--serif); font-size: 1.4rem; color: var(--gold2); text-decoration: none; letter-spacing:.01em; }
+.nav-links { display: flex; gap: 4px; list-style: none; }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: .82rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; padding: 7px 14px; border-radius: 8px; transition: color .2s, background .2s; }
+.nav-links a:hover { color: var(--gold2); background: rgba(201,146,42,.07); }
+.nav-toggle { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 6px; }
+.nav-toggle span { display:block; width:22px; height:2px; background:var(--gold); border-radius:2px; }
+
+/* ── HERO ── */
+.hero {
+  min-height: calc(100vh - 60px);
+  display: grid; place-items: center;
+  text-align: center; padding: 80px 24px 60px;
+  position: relative; overflow: hidden;
+}
+.hero-glow {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 65% 55% at 50% 0%,  rgba(201,146,42,.13) 0%, transparent 65%),
+    radial-gradient(ellipse 35% 35% at 80% 85%, rgba(201,146,42,.07) 0%, transparent 60%);
+}
+.hero-lines {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 75%);
+}
+
+.hero-inner { position: relative; z-index: 1; max-width: 760px; }
+
+.hero-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--gold);
+  background: rgba(201,146,42,.08); border: 1px solid var(--line2); border-radius: 100px;
+  padding: 6px 16px; margin-bottom: 36px;
+  animation: fadeup .6s ease both;
+}
+.label-dot { width:6px; height:6px; border-radius:50%; background:var(--green); box-shadow: 0 0 8px var(--green); }
+
+.hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(2.8rem, 7vw, 5rem);
+  line-height: 1.08; letter-spacing: -.01em;
+  margin-bottom: 24px;
+  animation: fadeup .65s .15s ease both;
+}
+.hero h1 em { font-style: italic; color: var(--gold2); }
+
+.hero p {
+  font-size: clamp(.95rem, 2vw, 1.12rem); line-height: 1.85;
+  color: var(--muted); max-width: 520px; margin: 0 auto 44px;
+  animation: fadeup .65s .28s ease both;
+}
+
+.hero-btns { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; animation: fadeup .65s .4s ease both; margin-bottom: 72px; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 26px; border-radius: 12px;
+  font-family: var(--sans); font-weight: 600; font-size: .9rem; letter-spacing: .03em;
+  text-decoration: none; cursor: pointer; border: none; transition: all .2s;
+}
+.btn-gold { background: var(--gold); color: #000; }
+.btn-gold:hover { background: var(--gold2); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(201,146,42,.35); }
+.btn-ghost { background: transparent; color: var(--gold); border: 1.5px solid var(--line2); }
+.btn-ghost:hover { background: rgba(201,146,42,.07); }
+
+/* Coin */
+.coin-wrap { position: relative; width: 180px; height: 180px; margin: 0 auto; animation: fadeup .65s .52s ease both; }
+.coin-orbit {
+  position: absolute; inset: -22px; border-radius: 50%;
+  border: 1px dashed rgba(201,146,42,.25);
+  animation: spin 22s linear infinite;
+}
+.coin-orbit::after {
+  content:''; position:absolute; top:-4px; left:50%; transform: translateX(-50%);
+  width:8px; height:8px; background:var(--gold); border-radius:50%;
+  box-shadow: 0 0 10px var(--gold);
+}
+.coin {
+  width:180px; height:180px; border-radius:50%;
+  background: conic-gradient(from 120deg, #5c3d00, #c9922a, #f0c060, #c9922a, #8a5e10, #c9922a, #f0c060, #5c3d00);
+  display:flex; align-items:center; justify-content:center;
+  font-family: var(--serif); font-size: 84px; color: rgba(0,0,0,.6);
+  box-shadow: 0 0 0 10px rgba(201,146,42,.1), 0 0 55px rgba(201,146,42,.5);
+  animation: float 4.5s ease-in-out infinite;
+  position:relative; z-index:1;
+  text-shadow: 0 2px 6px rgba(0,0,0,.35);
+}
+
+/* ── TICKER ── */
+.ticker-outer { overflow: hidden; background: var(--bg2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 11px 0; }
+.ticker-inner { display:flex; gap:56px; width:max-content; animation: ticker 25s linear infinite; font-family:var(--mono); font-size:12px; color:var(--muted); }
+.t-name { color:var(--gold2); font-weight:700; }
+
+/* ── PRICE STRIP ── */
+.price-strip {
+  display:flex; align-items:center; justify-content:center; gap:36px; flex-wrap:wrap;
+  padding: 22px 24px; background: var(--bg2); border-bottom: 1px solid var(--line);
+}
+.price-strip .big-price { font-family: var(--mono); font-size: 2.4rem; font-weight:700; }
+.live-pill {
+  display:inline-flex; align-items:center; gap:6px;
+  background: rgba(82,214,138,.1); border:1px solid rgba(82,214,138,.3);
+  border-radius:100px; padding:5px 14px;
+  font-family:var(--mono); font-size:12px; color:var(--green);
+}
+.live-pip { width:6px; height:6px; border-radius:50%; background:var(--green); animation: pip 1.6s infinite; }
+
+/* ── SECTION ── */
+.section { padding: 80px 24px; max-width: 1060px; margin: 0 auto; }
+.section-sm { padding: 56px 24px; max-width: 1060px; margin: 0 auto; }
+
+.eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; display:block; }
+.h2 { font-family: var(--serif); font-size: clamp(1.9rem, 4.5vw, 3rem); line-height: 1.12; margin-bottom: 14px; }
+.lead { font-size:1rem; line-height:1.8; color:var(--muted); max-width:520px; margin-bottom:48px; }
+
+/* ── CARDS ── */
+.grid { display:grid; gap:18px; }
+.g2 { grid-template-columns: repeat(2,1fr); }
+.g3 { grid-template-columns: repeat(3,1fr); }
+.g4 { grid-template-columns: repeat(4,1fr); }
+
+.card {
+  background: var(--bg2); border:1px solid var(--line); border-radius:18px; padding:26px;
+  transition: border-color .25s, transform .25s;
+}
+.card:hover { border-color: var(--line2); transform: translateY(-3px); }
+.card-icon { font-size:28px; margin-bottom:14px; display:block; }
+.card h3 { font-family:var(--serif); font-size:1.15rem; color:var(--gold2); margin-bottom:10px; }
+.card p { font-size:.88rem; line-height:1.8; color:var(--muted); }
+
+/* ── STAT STRIP ── */
+.stats-strip { display:grid; grid-template-columns: repeat(4,1fr); gap:14px; }
+.stat { background:var(--bg2); border:1px solid var(--line); border-radius:14px; padding:20px; text-align:center; }
+.stat-val { font-family:var(--mono); font-size:1.6rem; color:var(--gold2); display:block; margin-bottom:5px; }
+.stat-lbl { font-size:.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; }
+
+/* ── TIMELINE ── */
+.timeline { border-left: 2px solid var(--gold); padding-left: 28px; display:flex; flex-direction:column; gap:32px; }
+.tl-item { position:relative; }
+.tl-item::before { content:''; position:absolute; left:-35px; top:5px; width:12px; height:12px; background:var(--gold); border-radius:50%; box-shadow:0 0 10px rgba(201,146,42,.6); }
+.tl-step { font-family:var(--mono); font-size:10px; color:var(--gold); letter-spacing:.15em; text-transform:uppercase; margin-bottom:5px; }
+.tl-item h3 { font-family:var(--serif); font-size:1.1rem; margin-bottom:7px; }
+.tl-item p { font-size:.88rem; line-height:1.8; color:var(--muted); }
+
+/* ── QUIZ ── */
+.quiz-box { background:var(--bg2); border:1px solid var(--line); border-radius:20px; padding:36px; }
+.quiz-q { font-family:var(--serif); font-size:1.25rem; margin-bottom:22px; line-height:1.35; }
+.quiz-opts { display:flex; flex-direction:column; gap:10px; }
+.quiz-opt {
+  padding:13px 18px; border:1.5px solid var(--line); border-radius:12px;
+  background:none; color:var(--text); font-family:var(--sans); font-size:.92rem;
+  text-align:left; cursor:pointer; transition:all .18s;
+}
+.quiz-opt:hover { border-color:var(--line2); background:rgba(201,146,42,.05); }
+.quiz-opt.correct { border-color:var(--green); background:rgba(82,214,138,.07); color:var(--green); }
+.quiz-opt.wrong   { border-color:var(--red);   background:rgba(224,92,106,.07);  color:var(--red); }
+.quiz-fb { margin-top:16px; padding:13px 17px; border-radius:11px; font-size:.9rem; }
+.quiz-fb.ok  { background:rgba(82,214,138,.08);  color:var(--green); border:1px solid rgba(82,214,138,.25); }
+.quiz-fb.err { background:rgba(224,92,106,.08);  color:var(--red);   border:1px solid rgba(224,92,106,.25); }
+.quiz-meta { font-family:var(--mono); font-size:11px; color:var(--muted); margin-bottom:18px; text-transform:uppercase; letter-spacing:.1em; }
+
+/* ── GLOSSARY ── */
+.gloss { display:flex; flex-direction:column; gap:12px; }
+.gloss-item { background:var(--bg3); border:1px solid var(--line); border-radius:13px; padding:17px 20px; }
+.gloss-term { font-family:var(--serif); color:var(--gold2); font-size:1rem; margin-bottom:4px; }
+.gloss-def  { font-size:.85rem; line-height:1.7; color:var(--muted); }
+
+/* ── TABS ── */
+.tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:32px; }
+.tab {
+  padding:8px 18px; border-radius:100px; border:1px solid var(--line);
+  background:none; color:var(--muted); font-family:var(--sans); font-size:.82rem; font-weight:600;
+  cursor:pointer; transition:all .18s; letter-spacing:.04em;
+}
+.tab:hover { border-color:var(--line2); color:var(--gold2); }
+.tab.active { background:var(--gold); color:#000; border-color:var(--gold); }
+
+.tab-panel { display:none; }
+.tab-panel.active { display:block; }
+
+/* ── QUOTE SECTION ── */
+.quote-section { padding:90px 24px; text-align:center; position:relative; }
+.quote-section::before {
+  content:'"'; position:absolute; left:50%; top:20px; transform:translateX(-50%);
+  font-family:var(--serif); font-size:130px; line-height:1;
+  color:rgba(201,146,42,.08); pointer-events:none;
+}
+blockquote { font-family:var(--serif); font-size:clamp(1.5rem,4vw,2.5rem); line-height:1.28; max-width:680px; margin:0 auto 18px; }
+cite { font-family:var(--mono); font-size:12px; color:var(--muted); font-style:normal; }
+
+/* ── DIVIDER ── */
+hr { border:none; border-top:1px solid var(--line); }
+
+/* ── FOOTER ── */
+footer {
+  background:var(--bg2); border-top:1px solid var(--line);
+  padding:52px 24px 36px; text-align:center;
+}
+.footer-logo { font-family:var(--serif); font-size:1.6rem; color:var(--gold2); margin-bottom:12px; }
+footer p { font-size:.83rem; line-height:1.8; color:var(--muted); }
+.footer-nav { display:flex; justify-content:center; gap:20px; flex-wrap:wrap; margin-top:22px; }
+.footer-nav a { color:var(--muted); text-decoration:none; font-size:.8rem; font-weight:500; letter-spacing:.07em; text-transform:uppercase; transition:color .2s; }
+.footer-nav a:hover { color:var(--gold2); }
+
+/* ── REVEAL ── */
+.reveal { opacity:0; transform:translateY(26px); transition: opacity .65s ease, transform .65s ease; }
+.reveal.in { opacity:1; transform:translateY(0); }
+.reveal-d1 { transition-delay:.1s; }
+.reveal-d2 { transition-delay:.2s; }
+.reveal-d3 { transition-delay:.3s; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeup { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+@keyframes spin    { to{transform:rotate(360deg)} }
+@keyframes float   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-13px)} }
+@keyframes ticker  { to{transform:translateX(-50%)} }
+@keyframes pip     { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* ── RESPONSIVE ── */
+@media (max-width:700px) {
+  nav { padding:0 18px; }
+  .nav-links { display:none; position:absolute; top:60px; left:0; right:0; flex-direction:column; background:rgba(10,9,6,.97); padding:16px; border-bottom:1px solid var(--line); gap:2px; }
+  .nav-links.open { display:flex; }
+  .nav-links a { width:100%; padding:11px 14px; }
+  .nav-toggle { display:flex; }
+  .g2,.g3,.g4 { grid-template-columns:1fr; }
+  .stats-strip { grid-template-columns:repeat(2,1fr); }
+  .price-strip { gap:18px; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#inicio" class="nav-logo">₠ EduCoin</a>
+  <button class="nav-toggle" onclick="this.closest('nav').querySelector('.nav-links').classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links">
+    <li><a href="#inicio">Início</a></li>
+    <li><a href="#mercado">Mercado</a></li>
+    <li><a href="#aprenda">Aprenda</a></li>
+    <li><a href="#quiz">Quiz</a></li>
+    <li><a href="#glossario">Glossário</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <div class="hero-glow"></div>
+  <div class="hero-lines"></div>
+  <div class="hero-inner">
+    <div class="hero-label"><span class="label-dot"></span>Projeto Escolar — Educação Financeira</div>
+    <h1>O futuro do dinheiro começa com <em>conhecimento.</em></h1>
+    <p>A EduCoin é uma criptomoeda fictícia criada para ensinar como a tecnologia blockchain e as finanças digitais estão transformando o mundo.</p>
+    <div class="hero-btns">
+      <a href="#mercado" class="btn btn-gold">Ver cotação ao vivo</a>
+      <a href="#aprenda" class="btn btn-ghost">Aprender mais</a>
+    </div>
+    <div class="coin-wrap">
+      <div class="coin-orbit"></div>
+      <div class="coin">₠</div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-outer">
+  <div class="ticker-inner" id="ticker">
+    <span><span class="t-name">EDU</span> R$ 3,42 <span class="green">▲ 4,78%</span></span>
+    <span><span class="t-name">BTC</span> R$ 542.800 <span class="green">▲ 1,23%</span></span>
+    <span><span class="t-name">ETH</span> R$ 18.640 <span class="red">▼ 0,87%</span></span>
+    <span><span class="t-name">BNB</span> R$ 3.210 <span class="green">▲ 2,14%</span></span>
+    <span><span class="t-name">SOL</span> R$ 880 <span class="red">▼ 1,55%</span></span>
+    <span><span class="t-name">EDU</span> R$ 3,42 <span class="green">▲ 4,78%</span></span>
+    <span><span class="t-name">BTC</span> R$ 542.800 <span class="green">▲ 1,23%</span></span>
+    <span><span class="t-name">ETH</span> R$ 18.640 <span class="red">▼ 0,87%</span></span>
+    <span><span class="t-name">BNB</span> R$ 3.210 <span class="green">▲ 2,14%</span></span>
+    <span><span class="t-name">SOL</span> R$ 880 <span class="red">▼ 1,55%</span></span>
+  </div>
+</div>
+
+<!-- PRICE STRIP -->
+<div class="price-strip" id="mercado">
+  <div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px">EduCoin (EDU/BRL)</div>
+    <div class="big-price" id="price-val">R$ 3,4200</div>
+  </div>
+  <div class="live-pill"><span class="live-pip"></span><span id="price-var">▲ 4,78%</span> ao vivo</div>
+  <div style="text-align:center">
+    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px">Volume 24h</div>
+    <div class="mono" style="color:var(--gold2)" id="vol-val">R$ 18.730.000</div>
+  </div>
+  <div style="text-align:center">
+    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px">Investidores</div>
+    <div class="mono" style="color:var(--gold2)" id="inv-val">84.000+</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div style="padding:28px 24px;max-width:1060px;margin:0 auto;" id="stats-wrap">
+  <div class="stats-strip">
+    <div class="stat reveal"><span class="stat-val">100M</span><span class="stat-lbl">Fornecimento</span></div>
+    <div class="stat reveal reveal-d1"><span class="stat-val gold2" id="s-mc">R$ 342M</span><span class="stat-lbl">Market Cap</span></div>
+    <div class="stat reveal reveal-d2"><span class="stat-val">EDU</span><span class="stat-lbl">Símbolo</span></div>
+    <div class="stat reveal reveal-d3"><span class="stat-val">2024</span><span class="stat-lbl">Criação</span></div>
+  </div>
+</div>
+
+<hr>
+
+<!-- APRENDA SECTION -->
+<section class="section" id="aprenda">
+  <span class="eyebrow reveal">Por que a EduCoin?</span>
+  <h2 class="h2 reveal">Quatro pilares que explicam<br><span class="gold2">tudo sobre cripto.</span></h2>
+  <p class="lead reveal">Uma criptomoeda projetada para educar, demonstrando os pilares da tecnologia blockchain.</p>
+
+  <div class="grid g2" style="margin-bottom:60px">
+    <div class="card reveal">
+      <span class="card-icon">📚</span>
+      <h3>Educação Financeira</h3>
+      <p>Aprenda investimentos e economia digital de maneira simples e moderna, conectando teoria à prática do mercado real.</p>
+    </div>
+    <div class="card reveal reveal-d1">
+      <span class="card-icon">🔗</span>
+      <h3>Blockchain</h3>
+      <p>Todas as transações ficam registradas numa cadeia de blocos imutável, transparente e distribuída por milhares de computadores.</p>
+    </div>
+    <div class="card reveal reveal-d2">
+      <span class="card-icon">🌐</span>
+      <h3>Descentralização</h3>
+      <p>Sem controle de bancos centrais: o poder de validação está distribuído pela comunidade de participantes da rede.</p>
+    </div>
+    <div class="card reveal reveal-d3">
+      <span class="card-icon">⚡</span>
+      <h3>Tecnologia Moderna</h3>
+      <p>Criptografia de ponta, contratos inteligentes e carteiras digitais — a infraestrutura do dinheiro do futuro.</p>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <span class="eyebrow reveal">Como funciona?</span>
+  <h2 class="h2 reveal" style="margin-bottom:28px">Entenda os conceitos<br><span class="gold2">passo a passo.</span></h2>
+
+  <div class="tabs reveal">
+    <button class="tab active" onclick="showTab('t-blockchain',this)">Blockchain</button>
+    <button class="tab" onclick="showTab('t-mineracao',this)">Mineração</button>
+    <button class="tab" onclick="showTab('t-carteira',this)">Carteiras</button>
+    <button class="tab" onclick="showTab('t-mercado',this)">Mercado</button>
+    <button class="tab" onclick="showTab('t-riscos',this)">Riscos</button>
+  </div>
+
+  <div id="t-blockchain" class="tab-panel active">
+    <div class="card" style="max-width:680px">
+      <span class="card-icon">🔗</span>
+      <h3>O que é Blockchain?</h3>
+      <p>Imagine um livro-caixa compartilhado por milhares de computadores ao mesmo tempo — e que ninguém pode apagar ou alterar uma linha sequer.</p>
+      <p style="margin-top:12px">Cada <strong style="color:var(--text)">bloco</strong> contém um conjunto de transações e um código único chamado <strong style="color:var(--text)">hash</strong>, que conecta aquele bloco ao anterior. Alterar um bloco exigiria recalcular todos os seguintes — matematicamente impossível na prática.</p>
+      <div style="margin-top:16px;background:rgba(201,146,42,.07);border-left:3px solid var(--gold);padding:13px 16px;border-radius:0 10px 10px 0;font-size:.88rem;line-height:1.7">
+        <strong style="color:var(--gold)">Resumo:</strong> Block = bloco de dados · Chain = corrente/cadeia · Resultado = registro imutável e público.
+      </div>
+    </div>
+  </div>
+
+  <div id="t-mineracao" class="tab-panel">
+    <div class="card" style="max-width:680px">
+      <span class="card-icon">⛏️</span>
+      <h3>Como funciona a Mineração?</h3>
+      <p>Mineração é o processo pelo qual computadores (chamados de nós) competem para resolver um problema matemático complexo. O primeiro a resolver registra o próximo bloco na blockchain e recebe criptomoedas como recompensa.</p>
+      <p style="margin-top:12px">No Bitcoin, esse processo é chamado de <strong style="color:var(--text)">Proof of Work (Prova de Trabalho)</strong>. Outros sistemas, como o Ethereum atual, usam <strong style="color:var(--text)">Proof of Stake</strong>, que consome muito menos energia.</p>
+      <div style="margin-top:16px;background:rgba(201,146,42,.07);border-left:3px solid var(--gold);padding:13px 16px;border-radius:0 10px 10px 0;font-size:.88rem;line-height:1.7">
+        <strong style="color:var(--gold)">Curiosidade:</strong> A rede Bitcoin gasta mais energia por ano do que alguns países. Por isso a busca por alternativas mais sustentáveis é crescente.
+      </div>
+    </div>
+  </div>
+
+  <div id="t-carteira" class="tab-panel">
+    <div class="card" style="max-width:680px">
+      <span class="card-icon">👛</span>
+      <h3>Carteiras Digitais</h3>
+      <p>Uma carteira cripto não guarda moedas — ela guarda suas <strong style="color:var(--text)">chaves criptográficas</strong>. A <strong style="color:var(--text)">chave pública</strong> é como seu número de conta (pode compartilhar). A <strong style="color:var(--text)">chave privada</strong> é como sua senha secreta — nunca compartilhe.</p>
+      <p style="margin-top:12px">Existem carteiras <em>hot</em> (online, práticas, menos seguras) e <em>cold</em> (offline, hardware físico, mais seguras para grandes valores).</p>
+      <div style="margin-top:16px;background:rgba(224,92,106,.07);border-left:3px solid var(--red);padding:13px 16px;border-radius:0 10px 10px 0;font-size:.88rem;line-height:1.7;color:var(--red)">
+        <strong>Atenção:</strong> Perder a chave privada = perder o acesso ao dinheiro para sempre. Não há recuperação possível.
+      </div>
+    </div>
+  </div>
+
+  <div id="t-mercado" class="tab-panel">
+    <div class="card" style="max-width:680px">
+      <span class="card-icon">📈</span>
+      <h3>Como Funciona o Mercado?</h3>
+      <p>O preço de uma criptomoeda é determinado pela <strong style="color:var(--text)">lei da oferta e demanda</strong>. Quanto mais pessoas querem comprar, maior o preço. Quanto mais vendem, menor fica.</p>
+      <p style="margin-top:12px">Diferente de ações, o mercado cripto funciona <strong style="color:var(--text)">24 horas por dia, 7 dias por semana</strong>, sem pausas, em qualquer lugar do mundo.</p>
+      <div style="margin-top:16px;background:rgba(201,146,42,.07);border-left:3px solid var(--gold);padding:13px 16px;border-radius:0 10px 10px 0;font-size:.88rem;line-height:1.7">
+        <strong style="color:var(--gold)">Conceitos-chave:</strong> Liquidez · Volatilidade · Volume · Market Cap · Bull/Bear Market
+      </div>
+    </div>
+  </div>
+
+  <div id="t-riscos" class="tab-panel">
+    <div class="card" style="max-width:680px">
+      <span class="card-icon">⚠️</span>
+      <h3>Principais Riscos</h3>
+      <p><strong style="color:var(--text)">Volatilidade extrema:</strong> preços podem cair 80% em meses. <strong style="color:var(--text)">Golpes:</strong> esquemas Ponzi e tokens falsos são comuns. <strong style="color:var(--text)">Regulação:</strong> governos podem proibir ou restringir. <strong style="color:var(--text)">Perda de chave:</strong> sem recuperação possível.</p>
+      <p style="margin-top:12px">A regra básica: <strong style="color:var(--text)">invista apenas o que você tolera perder completamente</strong>. Mantenha reserva de emergência antes de qualquer investimento.</p>
+      <div style="margin-top:16px;background:rgba(82,214,138,.07);border-left:3px solid var(--green);padding:13px 16px;border-radius:0 10px 10px 0;font-size:.88rem;line-height:1.7;color:var(--green)">
+        <strong>Dica:</strong> Pesquise sempre o projeto, a equipe e o histórico antes de investir qualquer valor.
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr>
+
+<!-- Como Funciona timeline -->
+<section class="section">
+  <span class="eyebrow reveal">Passo a passo</span>
+  <h2 class="h2 reveal" style="margin-bottom:40px">De uma transação ao<br><span class="gold2">registro na blockchain.</span></h2>
+  <div class="timeline" style="max-width:580px">
+    <div class="tl-item reveal">
+      <div class="tl-step">Passo 01</div>
+      <h3>Você inicia a transação</h3>
+      <p>Assina digitalmente com sua chave privada e transmite para a rede.</p>
+    </div>
+    <div class="tl-item reveal">
+      <div class="tl-step">Passo 02</div>
+      <h3>A rede valida</h3>
+      <p>Milhares de nós verificam se você possui saldo suficiente e se a assinatura é válida.</p>
+    </div>
+    <div class="tl-item reveal">
+      <div class="tl-step">Passo 03</div>
+      <h3>Mineradores registram</h3>
+      <p>Agrupam sua transação com outras num bloco e resolvem o problema matemático.</p>
+    </div>
+    <div class="tl-item reveal">
+      <div class="tl-step">Passo 04</div>
+      <h3>Confirmação permanente</h3>
+      <p>O bloco é adicionado à cadeia. A partir daí, a transação é imutável e pública.</p>
+    </div>
+  </div>
+</section>
+
+<hr>
+
+<!-- QUIZ -->
+<section class="section" id="quiz">
+  <span class="eyebrow reveal">Teste seus conhecimentos</span>
+  <h2 class="h2 reveal" style="margin-bottom:36px">Quiz <span class="gold2">EduCoin</span></h2>
+  <div class="quiz-box reveal" style="max-width:640px">
+    <div id="quiz-area"></div>
+  </div>
+</section>
+
+<hr>
+
+<!-- GLOSSÁRIO -->
+<section class="section" id="glossario">
+  <span class="eyebrow reveal">Vocabulário</span>
+  <h2 class="h2 reveal" style="margin-bottom:36px">Glossário <span class="gold2">Cripto</span></h2>
+  <div class="gloss reveal" style="max-width:700px">
+    <div class="gloss-item"><div class="gloss-term">Blockchain</div><div class="gloss-def">Cadeia de blocos de dados imutável, distribuída e descentralizada. É a tecnologia base das criptomoedas.</div></div>
+    <div class="gloss-item"><div class="gloss-term">Bitcoin (BTC)</div><div class="gloss-def">Primeira criptomoeda do mundo, criada em 2009. Fornecimento máximo de 21 milhões de unidades.</div></div>
+    <div class="gloss-item"><div class="gloss-term">Altcoin</div><div class="gloss-def">Qualquer criptomoeda que não seja o Bitcoin. Exemplos: Ethereum, Solana, EduCoin.</div></div>
+    <div class="gloss-item"><div class="gloss-term">Wallet (Carteira)</div><div class="gloss-def">Software ou hardware que guarda as chaves e permite movimentar criptomoedas.</div></div>
+    <div class="gloss-item"><div class="gloss-term">Exchange</div><div class="gloss-def">Corretora onde você compra, vende e troca moedas digitais. Ex: Binance, Mercado Bitcoin.</div></div>
+    <div class="gloss-item"><div class="gloss-term">Market Cap</div><div class="gloss-def">Capitalização de mercado = preço × quantidade em circulação. Indica o "tamanho" da moeda.</div></div>
+    <div class="gloss-item"><div class="gloss-term">HODL</div><div class="gloss-def">Estratégia de segurar um ativo a longo prazo sem vender nas quedas.</div></div>
+    <div class="gloss-item"><div class="gloss-term">DeFi</div><div class="gloss-def">Finanças Descentralizadas: serviços financeiros rodando em contratos inteligentes, sem bancos.</div></div>
+    <div class="gloss-item"><div class="gloss-term">Bear / Bull Market</div><div class="gloss-def">Mercado de baixa (preços caindo por meses) vs. mercado de alta (preços subindo).</div></div>
+    <div class="gloss-item"><div class="gloss-term">Hash</div><div class="gloss-def">Código único gerado por um algoritmo para representar um bloco de dados. Qualquer mudança altera completamente o hash.</div></div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<div class="quote-section">
+  <blockquote class="reveal">"O futuro não é sobre dinheiro.<br>É sobre <span class="gold2">escolhas.</span>"</blockquote>
+  <cite class="reveal">— EduCoin · Projeto Escolar de Educação Financeira</cite>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">₠ EduCoin</div>
+  <p>Projeto 100% fictício desenvolvido para apresentação escolar.</p>
+  <p style="margin-top:6px;font-size:.78rem;opacity:.6">Todos os dados de cotação são simulados. Não constitui conselho financeiro.</p>
+  <nav class="footer-nav">
+    <a href="#inicio">Início</a>
+    <a href="#mercado">Mercado</a>
+    <a href="#aprenda">Aprenda</a>
+    <a href="#quiz">Quiz</a>
+    <a href="#glossario">Glossário</a>
+  </nav>
+</footer>
+
+<script>
+/* ── REVEAL ON SCROLL ── */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('in'); observer.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+/* ── LIVE PRICE SIMULATION ── */
+let price = 3.42;
+function tick() {
+  const delta = (Math.random() - 0.47) * 0.035;
+  price = Math.max(2.5, Math.min(5.5, price * (1 + delta)));
+  const prevClose = 3.26;
+  const pct = ((price - prevClose) / prevClose * 100);
+  const up = pct >= 0;
+
+  document.getElementById('price-val').textContent = 'R$ ' + price.toFixed(4);
+
+  const varEl = document.getElementById('price-var');
+  varEl.textContent = (up ? '▲ ' : '▼ ') + Math.abs(pct).toFixed(2) + '%';
+  varEl.style.color = up ? 'var(--green)' : 'var(--red)';
+
+  const vol = Math.round(15e6 + Math.random() * 8e6);
+  document.getElementById('vol-val').textContent = 'R$ ' + vol.toLocaleString('pt-BR');
+
+  const inv = Math.round(83400 + Math.random() * 1600);
+  document.getElementById('inv-val').textContent = inv.toLocaleString('pt-BR') + '+';
+
+  const mc = (price * 100e6 / 1e6).toFixed(0);
+  document.getElementById('s-mc').textContent = 'R$ ' + mc + 'M';
+}
+tick();
+setInterval(tick, 4500);
+
+/* ── TABS ── */
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ── QUIZ ── */
+const questions = [
+  { q: "O que é blockchain?", opts: ["Banco central digital","Cadeia de blocos descentralizada","Carteira física de cripto","Corretora de câmbio"], c: 1, exp: "Blockchain é uma cadeia de blocos distribuída — nenhuma entidade central a controla." },
+  { q: "Qual foi a primeira criptomoeda?", opts: ["Ethereum","Dogecoin","Bitcoin","Litecoin"], c: 2, exp: "O Bitcoin foi criado em 2009 por Satoshi Nakamoto." },
+  { q: "O que é 'chave privada'?", opts: ["Senha do app da corretora","Código que dá controle total sobre seus fundos","Número de cadastro na exchange","Código de verificação por e-mail"], c: 1, exp: "A chave privada é o segredo que prova sua posse. Quem a perde, perde o acesso para sempre." },
+  { q: "O que significa HODL?", opts: ["Vender tudo na queda","Estratégia de segurar o ativo a longo prazo","Sistema de mineração","Tipo de carteira fria"], c: 1, exp: "HODL surgiu de um erro de digitação de 'hold' e virou estratégia: segurar sem vender nas quedas." },
+  { q: "O que é 'Market Cap'?", opts: ["Volume de negociações diárias","Preço × quantidade em circulação","Taxa cobrada pela exchange","Limite máximo de transações"], c: 1, exp: "Market Cap = preço atual × total de moedas. Indica o 'tamanho' do ativo no mercado." },
+];
+let qi = 0, score = 0, answered = false;
+
+function renderQuiz() {
+  const d = questions[qi];
+  document.getElementById('quiz-area').innerHTML = `
+    <div class="quiz-meta">Pergunta ${qi+1}/${questions.length} &nbsp;·&nbsp; Pontos: ${score}</div>
+    <div class="quiz-q">${d.q}</div>
+    <div class="quiz-opts">
+      ${d.opts.map((o,i) => `<button class="quiz-opt" onclick="answer(${i})">${o}</button>`).join('')}
+    </div>
+    <div id="qfb"></div>`;
+}
+
+function answer(i) {
+  if(answered) return;
+  answered = true;
+  const d = questions[qi];
+  const opts = document.querySelectorAll('.quiz-opt');
+  opts[i].classList.add(i === d.c ? 'correct' : 'wrong');
+  opts[d.c].classList.add('correct');
+  if(i === d.c) score++;
+  const last = qi === questions.length - 1;
+  document.getElementById('qfb').innerHTML = `
+    <div class="quiz-fb ${i===d.c?'ok':'err'}">${i===d.c?'✅':'❌'} ${d.exp}</div>
+    ${!last
+      ? `<button class="btn btn-gold" style="margin-top:14px" onclick="next()">Próxima →</button>`
+      : `<div style="margin-top:20px;font-family:var(--mono);font-size:.95rem">
+           Resultado: ${score}/${questions.length} ${score===questions.length?'🏆 Perfeito!':score>=3?'👍 Muito bom!':'📚 Continue estudando!'}
+         </div>
+         <button class="btn btn-ghost" style="margin-top:14px" onclick="reset()">Recomeçar</button>`
+    }`;
+}
+
+function next()  { qi++; answered = false; renderQuiz(); }
+function reset() { qi = 0; score = 0; answered = false; renderQuiz(); }
+
+renderQuiz();
+</script>
+</body>
+</html>
